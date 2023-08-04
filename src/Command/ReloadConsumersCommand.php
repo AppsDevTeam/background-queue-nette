@@ -30,10 +30,12 @@ class ReloadConsumersCommand extends Command
 		$this->setDescription('Creates the specified number of noop messages to reload consumers.');
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output): void
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		for ($i = 0; $i < $input->getArgument("number"); $i++) {
 			$this->backgroundQueueRabbitMQ->publishNoop();
 		}
+
+		return 0;
 	}
 }
