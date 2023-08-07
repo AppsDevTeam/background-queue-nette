@@ -12,23 +12,30 @@ class ReloadConsumersCommand extends Command
 {
 	protected static $defaultName = 'background-queue:reload-consumers';
 
+	protected BackgroundQueueRabbitMQ $backgroundQueueRabbitMQ;
+	
+	public function __construct(BackgroundQueueRabbitMQ $backgroundQueueRabbitMQ) 
+	{
+		parent::__construct();
+		$this->backgroundQueueRabbitMQ = $backgroundQueueRabbitMQ;
+	}
+
 	protected function configure()
 	{
 		$this->addArgument(
 			"number",
-			InputArgument::OPTIONAL,
+			InputArgument::REQUIRED,
 			'Number of consumers to reload.'
 		);
 		$this->setDescription('Creates the specified number of noop messages to reload consumers.');
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output): void
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		/** @var BackgroundQueueRabbitMQ $rabbitMQ */
-		$rabbitMQ = $this->getHelper("container")->getByType(BackgroundQueueRabbitMQ::class);
-
 		for ($i = 0; $i < $input->getArgument("number"); $i++) {
-			$rabbitMQ->publishNoop();
+			$this->backgroundQueueRabbitMQ->publishNoop();
 		}
+
+		return 0;
 	}
 }
