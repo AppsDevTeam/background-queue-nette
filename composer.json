@@ -9,7 +9,7 @@
 			"email": "hello@appsdevteam.com"
 		}
 	],
-	"description": "Background queue for Nette and RabbitMQ.",
+	"description": "Background queue for Nette using RabbitMQ.",
 	"license": "MIT",
 	"require": {
 		"php": "^7.4|^8.0",
@@ -20,7 +20,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"ADT\\BackgroundQueue\\": "src"
+			"ADT\\BackgroundQueueNette\\": "src"
 		}
 	}
 }

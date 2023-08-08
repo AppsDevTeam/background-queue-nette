@@ -1,4 +1,4 @@
-# Background Queue for Nette and RabbitMQ
+# Background Queue for Nette using RabbitMQ
 
 ### 1.1 Installation
 
@@ -9,22 +9,6 @@ composer require adt/background-queue-nette
 ### 1.2 Configuration
 
 ```neon
-extensions:
-	backgroundQueue: ADT\BackgroundQueue\DI\BackgroundQueueExtension
-
-backgroundQueue:
-	callbacks:
-		sendEmail: [@App\Model\Mailer, sendEmail]
-		...
-	notifyOnNumberOfAttempts: 5 # počet pokusů o zpracování záznamu před zalogováním
-	tempDir: %tempDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandu
-	queue: general # nepovinné, název fronty, do které se ukládají a ze které se vybírají záznamy
-	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
-	amqpPublishCallback: [@rabbitMq, 'publish'] # nepovinné, callback, který publishne zprávu do brokera
-	amqpWaitingQueueName: 'waiting' # nepovinné, název queue, kam ukládat záznamy, které ještě nelze zpracovat
-```
-
-```neon
 parameters:
 	rabbitMQ:
 		host: HOST
@@ -33,12 +17,12 @@ parameters:
 		name: NAME
 
 extensions:
+	backgroundQueue: ADT\BackgroundQueueNette\DI\BackgroundQueueExtension
 	rabbitMQ: Kdyby\RabbitMq\DI\RabbitMqExtension
 
 services:
-	rabbitMQ: ADT\BackgroundQueue\BackgroundQueueRabbitMQ
-	
-	- ADT\BackgroundQueue\Command\ReloadConsumersCommand
+	rabbitMQ.producer: ADT\BackgroundQueueNette\Broker\Producer
+	rabbitMQ.consumer: ADT\BackgroundQueueNette\Broker\Consumer
 
 	rabbitMQ.console.0:
 		class: Kdyby\RabbitMq\Command\ConsumerCommand
@@ -55,6 +39,16 @@ services:
 	rabbitMQ.console.4:
 		class: Kdyby\RabbitMq\Command\StdInProducerCommand
 		tags: [console.command: rabbitmq:stdin-producer]
+
+backgroundQueue:
+	callbacks:
+		sendEmail: [@App\Model\Mailer, sendEmail]
+	notifyOnNumberOfAttempts: 5 # počet pokusů o zpracování záznamu před zalogováním
+	tempDir: %tempDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandu
+	queue: general # nepovinné, název fronty, do které se ukládají a ze které se vybírají záznamy
+	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
+	producer: @rabbitMQ.producer # nepovinné, callback, který publishne zprávu do brokera
+	waitingQueue: 'waiting' # nepovinné, název queue, kam ukládat záznamy, které ještě nelze zpracovat
 
 rabbitMQ:
 	connection:
@@ -77,7 +71,7 @@ rabbitMQ:
 		general:
 			exchange: {name: %rabbitMQ.name%, type: direct}
 			queue: {name: %rabbitMQ.name%, arguments: {'x-queue-type': ['S', 'quorum']}}
-			callback: [@rabbitMQ, 'process']
+			callback: [@rabbitMQ.consumer, 'process']
 			qos:
 				# Consumers consume only 1 message and are restarted
 				# We need to reflect this by setting prefetchCount to 1

@@ -1,6 +1,6 @@
 <?php
 
-namespace ADT\BackgroundQueue\DI;
+namespace ADT\BackgroundQueueNette\DI;
 
 use ADT\BackgroundQueue\BackgroundQueue;
 use ADT\BackgroundQueue\Console\ClearFinishedCommand;
@@ -21,10 +21,11 @@ class BackgroundQueueExtension extends CompilerExtension
 			'notifyOnNumberOfAttempts' => Expect::int()->min(1)->required(),
 			'tempDir' => Expect::string()->required(),
 			'queue' => Expect::string('general'),
-			'connection' => Expect::arrayOf('int|string|object', 'string'),
+			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
-			'amqpPublishCallback' => Expect::anyOf(null, Expect::type('callable')),
-			'amqpWaitingProducerName' => Expect::string()->nullable(),
+			'producer' => Expect::string()->nullable(),
+			'waitingQueue' => Expect::string()->nullable(),
+			'logger'=> Expect::string()->nullable()
 		]);
 	}
 
@@ -46,9 +47,6 @@ class BackgroundQueueExtension extends CompilerExtension
 		foreach ($config['callbacks'] as $callbackSlug => $callback) {
 			$config['callbacks'][$callbackSlug] = new $statementClass($statementEntity, [$callback]);
 		}
-		if ($config['amqpPublishCallback']) {
-			$config['amqpPublishCallback'] = new $statementClass($statementEntity, [$config['amqpPublishCallback']]);
-		}
 
 		// service registration
 
@@ -58,12 +56,16 @@ class BackgroundQueueExtension extends CompilerExtension
 
 		// command registration
 
+		$builder->addDefinition($this->prefix('clearFinishedCommand'))
+			->setFactory(ClearFinishedCommand::class)
+			->setAutowired(false);
+
 		$builder->addDefinition($this->prefix('processCommand'))
 			->setFactory(ProcessCommand::class)
 			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('clearFinishedCommand'))
-			->setFactory(ClearFinishedCommand::class)
+		$builder->addDefinition($this->prefix('processCommand'))
+			->setFactory(ProcessCommand::class)
 			->setAutowired(false);
 
 		$builder->addDefinition($this->prefix('updateSchemaCommand'))
