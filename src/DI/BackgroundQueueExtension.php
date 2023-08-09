@@ -65,9 +65,11 @@ class BackgroundQueueExtension extends CompilerExtension
 			->setFactory(ProcessCommand::class)
 			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('reloadConsumerCommand'))
-			->setFactory(ReloadConsumersCommand::class)
-			->setAutowired(false);
+		if ($config['producer']) {
+			$builder->addDefinition($this->prefix('reloadConsumerCommand'))
+				->setFactory(ReloadConsumersCommand::class)
+				->setAutowired(false);
+		}
 
 		$builder->addDefinition($this->prefix('updateSchemaCommand'))
 			->setFactory(UpdateSchemaCommand::class)

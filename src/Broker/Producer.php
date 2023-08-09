@@ -16,9 +16,9 @@ class Producer implements \ADT\BackgroundQueue\Broker\Producer
 		$this->connection = $connection;
 	}
 
-	public function publish(int $id, ?string $producer = null): void
+	public function publish(int $id, ?string $queue = null): void
 	{
-		$this->connection->getProducer($producer ?: self::PRODUCER_GENERAL)->publish($id);
+		$this->connection->getProducer($queue ?: self::PRODUCER_GENERAL)->publish($id);
 	}
 
 	public function publishNoop(): void
