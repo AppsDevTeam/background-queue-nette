@@ -20,5 +20,8 @@
 		"psr-4": {
 			"ADT\\BackgroundQueueNette\\": "src"
 		}
+	},
+	"require-dev": {
+		"kdyby/rabbitmq": "^2.0"
 	}
 }

@@ -26,7 +26,11 @@ class BackgroundQueueExtension extends CompilerExtension
 			'tableName' => Expect::string('background_job'),
 			'producer' => Expect::string()->nullable(),
 			'waitingQueue' => Expect::string()->nullable(),
-			'logger'=> Expect::string()->nullable()
+			'waitingJobExpiration' => Expect::int(1000),
+			'logger'=> Expect::string()->nullable(),
+			'onBeforeProcess' => Expect::type('callable'),
+			'onError' => Expect::type('callable'),
+			'onAfterProcess' => Expect::type('callable'),
 		]);
 	}
 
