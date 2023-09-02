@@ -47,10 +47,16 @@ backgroundQueue:
 		sendEmail: [@App\Model\Mailer, sendEmail]
 	notifyOnNumberOfAttempts: 5 # počet pokusů o zpracování záznamu před zalogováním
 	tempDir: %tempDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandu
-	queue: general # nepovinné, název fronty, do které se ukládají a ze které se vybírají záznamy
 	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
+	queue: general # nepovinné, název fronty, do které se ukládají a ze které se vybírají záznamy
+	tableName: background_job # nepovinné, název tabulky, do které se budou ukládat jednotlivé joby
 	producer: @rabbitMQ.producer # nepovinné, callback, který publishne zprávu do brokera
 	waitingQueue: 'waiting' # nepovinné, název queue, kam ukládat záznamy, které ještě nelze zpracovat
+	waitingJobExpiration' => 1000 # nepovinné, délka v ms, po které se job pokusí znovu provést, když čeká na dokončení předchozího
+	logger: Tracy\Bridges\Psr\TracyToPsrLoggerAdapter(\Tracy\Debugger::getLogger()) # nepovinné, musí implementovat psr/log LoggerInterface
+	onBeforeProcess: [System, switchDatabase] # nepovinné
+	onError' => [ADT\Utils\Guzzle, handleException]  # nepovinné
+	onAfterProcess' => [System, switchDatabaseBack] # nepovinné
 
 rabbitMQ:
 	connection:
