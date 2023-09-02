@@ -19,7 +19,16 @@ class BackgroundQueueExtension extends CompilerExtension
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
-			'callbacks' => Expect::arrayOf('callable', 'string')->required(),
+			'callbacks' => Expect::arrayOf(
+				Expect::anyOf(
+					Expect::type('callable'),  // callbackName => callback
+					Expect::structure([              // callbackName => callback + queue
+							'callback' => Expect::type('callable'),
+							'queue' => Expect::string(),
+					])
+				),
+				'string'
+			)->required(),
 			'notifyOnNumberOfAttempts' => Expect::int()->min(1)->required(),
 			'tempDir' => Expect::string()->required(),
 			'queue' => Expect::string('general'),
@@ -50,8 +59,19 @@ class BackgroundQueueExtension extends CompilerExtension
 		}
 		$statementEntity = 'function(...$parameters){ return call_user_func(?, ...$parameters); }';
 
-		foreach ($config['callbacks'] as $callbackSlug => $callback) {
-			$config['callbacks'][$callbackSlug] = new $statementClass($statementEntity, [$callback]);
+		foreach ($config['callbacks'] as $callbackName => $callbackData) {
+			if (!isset($callbackData['callback'])) {
+				// structure unification:
+				// from: callbackName => callback
+				// to: callbackName => callback + queue
+
+				$config['callbacks'][$callbackName] = [
+					'callback' => $callbackData,
+					'queue' => null,
+				];
+			}
+
+			$config['callbacks'][$callbackName]['callback'] = new $statementClass($statementEntity, [$config['callbacks'][$callbackName]['callback']]);
 		}
 
 		// service registration

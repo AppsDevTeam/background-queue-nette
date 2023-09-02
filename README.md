@@ -45,6 +45,9 @@ services:
 backgroundQueue:
 	callbacks:
 		sendEmail: [@App\Model\Mailer, sendEmail]
+		sendEmail2: # možnost specifikace jiné fronty pro tento callback
+			callback: [@App\Model\Mailer, sendEmail]
+			queue: general
 	notifyOnNumberOfAttempts: 5 # počet pokusů o zpracování záznamu před zalogováním
 	tempDir: %tempDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandu
 	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
