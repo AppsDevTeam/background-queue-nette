@@ -52,11 +52,11 @@ backgroundQueue:
 	tableName: background_job # nepovinné, název tabulky, do které se budou ukládat jednotlivé joby
 	producer: @rabbitMQ.producer # nepovinné, callback, který publishne zprávu do brokera
 	waitingQueue: 'waiting' # nepovinné, název queue, kam ukládat záznamy, které ještě nelze zpracovat
-	waitingJobExpiration' => 1000 # nepovinné, délka v ms, po které se job pokusí znovu provést, když čeká na dokončení předchozího
+	waitingJobExpiration: 1000 # nepovinné, délka v ms, po které se job pokusí znovu provést, když čeká na dokončení předchozího
 	logger: Tracy\Bridges\Psr\TracyToPsrLoggerAdapter(\Tracy\Debugger::getLogger()) # nepovinné, musí implementovat psr/log LoggerInterface
 	onBeforeProcess: [System, switchDatabase] # nepovinné
-	onError' => [ADT\Utils\Guzzle, handleException]  # nepovinné
-	onAfterProcess' => [System, switchDatabaseBack] # nepovinné
+	onError: [ADT\Utils\Guzzle, handleException]  # nepovinné
+	onAfterProcess: [System, switchDatabaseBack] # nepovinné
 
 rabbitMQ:
 	connection:
