@@ -11,6 +11,7 @@ use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Processor;
 use Nette\Schema\Schema;
+use Psr\Log\LoggerInterface;
 
 /** @noinspection PhpUnused */
 class BackgroundQueueExtension extends CompilerExtension
@@ -27,10 +28,10 @@ class BackgroundQueueExtension extends CompilerExtension
 			'producer' => Expect::string()->nullable(),
 			'waitingQueue' => Expect::string()->nullable(),
 			'waitingJobExpiration' => Expect::int(1000),
-			'logger'=> Expect::string()->nullable(),
+			'logger'=> Expect::anyOf(Expect::type(\Nette\DI\Definitions\Statement::class),  Expect::type(\Nette\DI\Statement::class))->nullable(),
 			'onBeforeProcess' => Expect::type('callable')->nullable(),
 			'onError' => Expect::type('callable')->nullable(),
-			'onAfterProcess' => Expect::type('callable')->nullable()
+			'onAfterProcess' => Expect::type('callable')->nullable(),
 		]);
 	}
 
