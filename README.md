@@ -27,6 +27,8 @@ services:
 	rabbitMQ.console.0:
 		class: Kdyby\RabbitMq\Command\ConsumerCommand
 		tags: [console.command: rabbitmq:consumer]
+
+	# optional
 	rabbitMQ.console.1:
 		class: Kdyby\RabbitMq\Command\PurgeConsumerCommand
 		tags: [console.command: rabbitmq:purge]
@@ -64,7 +66,7 @@ rabbitMQ:
 
 		waiting:
 			exchange: {name: %rabbitMQ.name%_waiting, type: direct}
-			queue: {name: %rabbitMQ.name%_waiting, arguments: {'x-dead-letter-exchange': ['S', %rabbitMQ.name%], 'x-message-ttl': ['I', 100]}} # 100ms
+			queue: {name: %rabbitMQ.name%_waiting, arguments: {'x-queue-type': ['S', 'quorum'], 'x-dead-letter-exchange': ['S', %rabbitMQ.name%]}}
 			contentType: text/plain
 
 	consumers:
