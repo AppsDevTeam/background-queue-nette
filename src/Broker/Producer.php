@@ -2,7 +2,9 @@
 
 namespace ADT\BackgroundQueueNette\Broker;
 
+use Exception;
 use Kdyby\RabbitMq\Connection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class Producer implements \ADT\BackgroundQueue\Broker\Producer
 {
@@ -18,11 +20,20 @@ class Producer implements \ADT\BackgroundQueue\Broker\Producer
 
 	public function publish(int $id, string $queue, ?int $expiration = null): void
 	{
-		$properties = [];
+		$properties = [
+			'content_type' => 'text/plain',
+			'delivery_mode' => 2,
+		];
 		if ($expiration) {
 			$properties['expiration'] = (string)   $expiration;
 		}
-		$this->connection->getProducer($queue)->publish($id, '', $properties);
+		$this->connection->getProducer($queue)->getChannel()->set_return_listener(
+			function ($replyCode, $replyText, $exchange, $routingKey, AMQPMessage $message) {
+				throw new Exception("Code: $replyCode, Text: $replyText, Exchange: $exchange, Routing Key: $routingKey");
+			}
+		);
+		$this->connection->getProducer($queue)->getChannel()->basic_publish(new AMQPMessage($id, $properties), '', '', true);
+		$this->connection->getProducer($queue)->getChannel()->wait();
 	}
 
 	public function publishNoop(): void
