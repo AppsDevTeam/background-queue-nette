@@ -27,13 +27,22 @@ class Producer implements \ADT\BackgroundQueue\Broker\Producer
 		if ($expiration) {
 			$properties['expiration'] = (string)   $expiration;
 		}
-		$this->connection->getProducer($queue)->getChannel()->set_return_listener(
+
+		$producer =  $this->connection->getProducer($queue);
+		$channel = $producer->getChannel();
+
+		$channel->confirm_select();
+		$channel->set_nack_handler(function ($message) {
+			throw new Exception('Internal error (basic.nack)');
+		});
+		$channel->set_return_listener(
 			function ($replyCode, $replyText, $exchange, $routingKey, AMQPMessage $message) {
 				throw new Exception("Code: $replyCode, Text: $replyText, Exchange: $exchange, Routing Key: $routingKey");
 			}
 		);
-		$this->connection->getProducer($queue)->getChannel()->basic_publish(new AMQPMessage($id, $properties), '', '', true);
-		$this->connection->getProducer($queue)->getChannel()->wait();
+
+		$channel->basic_publish(new AMQPMessage($id, $properties), $producer->getExchangeOptions()['name'], '', true);
+		$channel->wait_for_pending_acks_returns();
 	}
 
 	public function publishNoop(): void
