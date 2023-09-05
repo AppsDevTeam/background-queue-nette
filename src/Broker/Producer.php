@@ -24,15 +24,26 @@ class Producer implements \ADT\BackgroundQueue\Broker\Producer
 			'content_type' => 'text/plain',
 			'delivery_mode' => 2,
 		];
-		if ($expiration) {
-			$properties['expiration'] = (string)   $expiration;
-		}
 
 		$producer =  $this->connection->getProducer($queue);
 		$channel = $producer->getChannel();
 
+		if ($expiration) {
+			$options = $producer->getQueueOptions();
+			$producer->getChannel()->queue_declare(
+				$queue . '_' . $expiration,
+				$options['passive'],
+				$options['durable'],
+				$options['exclusive'],
+				$options['autoDelete'],
+				$options['nowait'],
+				$options['arguments'],
+				$options['ticket']
+			);
+		}
+
 		$channel->confirm_select();
-		$channel->set_nack_handler(function ($message) {
+		$channel->set_nack_handler(function (AMQPMessage $message) {
 			throw new Exception('Internal error (basic.nack)');
 		});
 		$channel->set_return_listener(
@@ -40,8 +51,7 @@ class Producer implements \ADT\BackgroundQueue\Broker\Producer
 				throw new Exception("Code: $replyCode, Text: $replyText, Exchange: $exchange, Routing Key: $routingKey");
 			}
 		);
-
-		$channel->basic_publish(new AMQPMessage($id, $properties), $producer->getExchangeOptions()['name'], '', true);
+		$channel->basic_publish(new AMQPMessage($id, $properties), $producer->getExchangeOptions()['name'], $expiration ? $queue . '_' . $expiration : '', true);
 		$channel->wait_for_pending_acks_returns();
 	}
 
