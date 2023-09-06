@@ -92,7 +92,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			->setAutowired(false);
 
 		if ($config['producer']) {
-			$defs[] = $builder->addDefinition($this->prefix('consumeCommand'))
+			$builder->addDefinition($this->prefix('consumeCommand'))
 				->setFactory(ConsumeCommand::class)
 				->setAutowired(false);
 
@@ -106,7 +106,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			->setAutowired(false);
 
 		foreach ($defs as $_def) {
-			$_def->addSetup('setLocksPath', [$config['tempDir']]);
+			$_def->addSetup('setLocksDir', [$config['tempDir']]);
 		}
 	}
 
