@@ -4,6 +4,7 @@ namespace ADT\BackgroundQueueNette\DI;
 
 use ADT\BackgroundQueue\BackgroundQueue;
 use ADT\BackgroundQueue\Console\ClearFinishedCommand;
+use ADT\BackgroundQueue\Console\ConsumeCommand;
 use ADT\BackgroundQueue\Console\ProcessCommand;
 use ADT\BackgroundQueue\Console\ReloadConsumersCommand;
 use ADT\BackgroundQueue\Console\UpdateSchemaCommand;
@@ -11,7 +12,7 @@ use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Processor;
 use Nette\Schema\Schema;
-use Psr\Log\LoggerInterface;
+use stdClass;
 
 /** @noinspection PhpUnused */
 class BackgroundQueueExtension extends CompilerExtension
@@ -31,25 +32,24 @@ class BackgroundQueueExtension extends CompilerExtension
 			)->required(),
 			'notifyOnNumberOfAttempts' => Expect::int()->min(1)->required(),
 			'tempDir' => Expect::string()->required(),
-			'queue' => Expect::string('general'),
+			'queue' => Expect::string(),
 			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
 			'producer' => Expect::string()->nullable(),
-			'waitingQueue' => Expect::string()->nullable(),
 			'waitingJobExpiration' => Expect::int(1000),
 			'logger'=> Expect::anyOf(Expect::type(\Nette\DI\Definitions\Statement::class),  Expect::type(\Nette\DI\Statement::class))->nullable(),
 			'onBeforeProcess' => Expect::type('callable')->nullable(),
 			'onError' => Expect::type('callable')->nullable(),
-			'onAfterProcess' => Expect::type('callable')->nullable()
+			'onAfterProcess' => Expect::type('callable')->nullable(),
+			'debug' => Expect::bool(false)
 		]);
 	}
 
-	public function loadConfiguration()
+	public function loadConfiguration(): void
 	{
 		// nette/di 2.4
-		$this->config = (new Processor)->process($this->getConfigSchema(), $this->config);
+		$this->config = $config = $this->objectToArray((new Processor)->process($this->getConfigSchema(), $this->config));
 		$builder = $this->getContainerBuilder();
-		$config = $this->objectToArray($this->config);
 
 		if (class_exists(\Nette\DI\Definitions\Statement::class, false)) {
 			$statementClass = \Nette\DI\Definitions\Statement::class;
@@ -91,6 +91,10 @@ class BackgroundQueueExtension extends CompilerExtension
 			->setAutowired(false);
 
 		if ($config['producer']) {
+			$builder->addDefinition($this->prefix('consumeCommand'))
+				->setFactory(ConsumeCommand::class)
+				->setAutowired(false);
+
 			$builder->addDefinition($this->prefix('reloadConsumerCommand'))
 				->setFactory(ReloadConsumersCommand::class)
 				->setAutowired(false);
@@ -108,12 +112,12 @@ class BackgroundQueueExtension extends CompilerExtension
 				if (is_array($value)) {
 					$array[$key] = $this->objectToArray($value);
 				}
-				if ($value instanceof \stdClass) {
+				if ($value instanceof stdClass) {
 					$array[$key] = $this->objectToArray((array)$value);
 				}
 			}
 		}
-		if ($array instanceof \stdClass) {
+		if ($array instanceof stdClass) {
 			return $this->objectToArray((array)$array);
 		}
 		return $array;
