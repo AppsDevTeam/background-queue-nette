@@ -12,6 +12,7 @@ use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Processor;
 use Nette\Schema\Schema;
+use Nette\DI\Definitions;
 use stdClass;
 
 /** @noinspection PhpUnused */
@@ -82,27 +83,31 @@ class BackgroundQueueExtension extends CompilerExtension
 
 		// command registration
 
-		$builder->addDefinition($this->prefix('clearFinishedCommand'))
+		$defs[] = $builder->addDefinition($this->prefix('clearFinishedCommand'))
 			->setFactory(ClearFinishedCommand::class)
 			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('processCommand'))
+		$defs[] = $builder->addDefinition($this->prefix('processCommand'))
 			->setFactory(ProcessCommand::class)
 			->setAutowired(false);
 
 		if ($config['producer']) {
-			$builder->addDefinition($this->prefix('consumeCommand'))
+			$defs[] = $builder->addDefinition($this->prefix('consumeCommand'))
 				->setFactory(ConsumeCommand::class)
 				->setAutowired(false);
 
-			$builder->addDefinition($this->prefix('reloadConsumerCommand'))
+			$defs[] = $builder->addDefinition($this->prefix('reloadConsumerCommand'))
 				->setFactory(ReloadConsumersCommand::class)
 				->setAutowired(false);
 		}
 
-		$builder->addDefinition($this->prefix('updateSchemaCommand'))
+		$defs[] = $builder->addDefinition($this->prefix('updateSchemaCommand'))
 			->setFactory(UpdateSchemaCommand::class)
 			->setAutowired(false);
+
+		foreach ($defs as $_def) {
+			$_def->addSetup('setLocksPath', [$config['tempDir']]);
+		}
 	}
 
 	private function objectToArray($array)
