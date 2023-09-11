@@ -10,6 +10,14 @@ composer require adt/background-queue-nette
 
 ```neon
 parameters:
+	database:
+		serverVersion: '8.0'
+		driver: pdo_mysql
+		host: mysql
+		port: 3306
+		user: %env.DB_USER%
+		password: %end.DB_PASSWORD%
+		dbname: %emv.DB_DBNAME%
 	rabbitMQ:
 		connection:
 			host: HOST
