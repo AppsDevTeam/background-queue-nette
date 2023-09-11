@@ -16,8 +16,8 @@ parameters:
 		host: mysql
 		port: 3306
 		user: %env.DB_USER%
-		password: %end.DB_PASSWORD%
-		dbname: %emv.DB_DBNAME%
+		password: %env.DB_PASSWORD%
+		dbname: %env.DB_DBNAME%
 	rabbitMQ:
 		connection:
 			host: HOST
