@@ -53,3 +53,31 @@ backgroundQueue:
 	onError: [ADT\Utils\Guzzle, handleException]  # nepovinné
 	onAfterProcess: [System, switchDatabaseBack] # nepovinné
 ```
+
+## 1.3 RabbitMQ (optional)
+
+Because RabbitMQ is optional dependency, it doesn't check your installed version against the version with which this package was tested. That's why it's recommended to add
+
+```json
+{
+  "conflict": {
+    "php-amqplib/php-amqplib": "<3.0.0 || >=4.0.0"
+  }
+}
+```
+
+to your composer and then run:
+
+```
+composer require php-amqplib/php-amqplib
+```
+
+This make sures you avoid BC break when upgrading `php-amqplib/php-amqplib` in the future.
+
+This version of `php-amqplib/php-amqplib` also need ext-sockets:
+
+```Dockerfile
+docker-php-ext-install sockets
+```
+
+
