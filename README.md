@@ -31,8 +31,8 @@ extensions:
 	backgroundQueue: ADT\BackgroundQueueNette\DI\BackgroundQueueExtension
 
 services:
-	rabbitMQ.connection: ADT\BackgroundQueue\Broker\PhpAmqpLib\Connection(%rabbitMQ.connection%)
-	rabbitMQ.producer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Producer(%rabbitMQ.queue%)
+	rabbitMQ.manager: ADT\BackgroundQueue\Broker\PhpAmqpLib\Manager(%rabbitMQ.connection%, %rabbitMQ.queue%)
+	rabbitMQ.producer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Producer
 	rabbitMQ.consumer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Consumer
 
 backgroundQueue:
@@ -74,7 +74,7 @@ composer require php-amqplib/php-amqplib
 
 This make sures you avoid BC break when upgrading `php-amqplib/php-amqplib` in the future.
 
-This version of `php-amqplib/php-amqplib` also need ext-sockets:
+This version of `php-amqplib/php-amqplib` also need `ext-sockets`. You can add it to your Dockerfile like this:
 
 ```Dockerfile
 docker-php-ext-install sockets
