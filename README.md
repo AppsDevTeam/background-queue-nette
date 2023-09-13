@@ -59,6 +59,7 @@ parameters:
 		broker:
 			connection:
 				host: %env.BROKER_HOST%
+				port: %env.BROKER_PORT%
 				user: %env.BROKER_USER%
 				password: %env.BROKER_PASSWORD%
 			queue:
