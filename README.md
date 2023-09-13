@@ -20,10 +20,9 @@ parameters:
 		dbname: %env.DB_DBNAME%
 	rabbitMQ:
 		connection:
-			host: HOST
-			user: USER
-			password: PASSWORD
-			name: NAME
+			host: %env.RABBITMQ_HOST%
+			user: %env.RABBITMQ_USER%
+			password: %env.RABBITMQ_PASSWORD%
 		queue:
 			arguments: {'x-queue-type': ['S', 'quorum']} 
 
