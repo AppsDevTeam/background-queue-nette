@@ -13,26 +13,17 @@ parameters:
 	database:
 		serverVersion: '8.0'
 		driver: pdo_mysql
-		host: mysql
-		port: 3306
+		host: %env.DB_HOST%
+		port: %env.DB_PORT%
 		user: %env.DB_USER%
 		password: %env.DB_PASSWORD%
 		dbname: %env.DB_DBNAME%
-	rabbitMQ:
-		connection:
-			host: %env.RABBITMQ_HOST%
-			user: %env.RABBITMQ_USER%
-			password: %env.RABBITMQ_PASSWORD%
-		queue:
-			arguments: {'x-queue-type': ['S', 'quorum']} 
+
+	backgroundQueue:
+		queue: %env.PROJECT_NAME%
 
 extensions:
 	backgroundQueue: ADT\BackgroundQueueNette\DI\BackgroundQueueExtension
-
-services:
-	rabbitMQ.manager: ADT\BackgroundQueue\Broker\PhpAmqpLib\Manager(%rabbitMQ.connection%, %rabbitMQ.queue%)
-	rabbitMQ.producer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Producer
-	rabbitMQ.consumer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Consumer
 
 backgroundQueue:
 	callbacks:
@@ -45,38 +36,39 @@ backgroundQueue:
 	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
 	queue: %env.PROJECT_NAME% # název fronty, do které se ukládají a ze které se vybírají záznamy
 	tableName: background_job # nepovinné, název tabulky, do které se budou ukládat jednotlivé joby
-	producer: @rabbitMQ.producer # nepovinné, callback, který publishne zprávu do brokera
-	waitingJobExpiration: 1000 # nepovinné, délka v ms, po které se job pokusí znovu provést, když čeká na dokončení předchozího
 	logger: Tracy\Bridges\Psr\TracyToPsrLoggerAdapter(\Tracy\Debugger::getLogger()) # nepovinné, musí implementovat psr/log LoggerInterface
-	onBeforeProcess: [System, switchDatabase] # nepovinné
+	onBeforeProcess: null # nepovinné
 	onError: [ADT\Utils\Guzzle, handleException]  # nepovinné
-	onAfterProcess: [System, switchDatabaseBack] # nepovinné
+	onAfterProcess: null # nepovinné
 ```
 
-## 1.3 RabbitMQ (optional)
+## 1.3 Broker (optional)
 
-Because RabbitMQ is optional dependency, it doesn't check your installed version against the version with which this package was tested. That's why it's recommended to add
+### 1.3.1 Installation
 
-```json
-{
-  "conflict": {
-    "php-amqplib/php-amqplib": "<3.0.0 || >=4.0.0"
-  }
-}
+https://github.com/AppsDevTeam/background-queue#131-php-amqplib-installation
+
+### 1.3.2 Configuration
+
+```neon
+parameters:
+	backgroundQueue:
+		...
+		broker:
+			connection:
+				host: %env.BROKER_HOST%
+				user: %env.BROKER_USER%
+				password: %env.BROKER_PASSWORD%
+			queue:
+				arguments: {'x-queue-type': ['S', 'quorum']} 
+
+services:
+	backgroundQueue.broker.manager: ADT\BackgroundQueue\Broker\PhpAmqpLib\Manager(%backgroundQueue.broker.connection%, %backgroundQueue.broker.queue%)
+	backgroundQueue.broker.producer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Producer
+	backgroundQueue.broker.consumer: ADT\BackgroundQueue\Broker\PhpAmqpLib\Consumer
+
+backgroundQueue:
+	...
+	producer: @backgroundQueue.broker.producer
+	waitingJobExpiration: 1000
 ```
-
-to your composer and then run:
-
-```
-composer require php-amqplib/php-amqplib
-```
-
-This make sures you avoid BC break when upgrading `php-amqplib/php-amqplib` in the future.
-
-This version of `php-amqplib/php-amqplib` also need `ext-sockets`. You can add it to your Dockerfile like this:
-
-```Dockerfile
-docker-php-ext-install sockets
-```
-
-
