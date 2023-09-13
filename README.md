@@ -1,5 +1,7 @@
 # Background Queue for Nette using RabbitMQ
 
+## 1 Installation & Configuration
+
 ### 1.1 Installation
 
 ```
@@ -34,7 +36,7 @@ backgroundQueue:
 	notifyOnNumberOfAttempts: 5 # počet pokusů o zpracování záznamu před zalogováním
 	tempDir: %tempDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandu
 	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
-	queue: %env.PROJECT_NAME% # název fronty, do které se ukládají a ze které se vybírají záznamy
+	queue: %backgroundQueue.queue% # název fronty, do které se ukládají a ze které se vybírají záznamy
 	tableName: background_job # nepovinné, název tabulky, do které se budou ukládat jednotlivé joby
 	logger: Tracy\Bridges\Psr\TracyToPsrLoggerAdapter(\Tracy\Debugger::getLogger()) # nepovinné, musí implementovat psr/log LoggerInterface
 	onBeforeProcess: null # nepovinné
@@ -72,3 +74,7 @@ backgroundQueue:
 	producer: @backgroundQueue.broker.producer
 	waitingJobExpiration: 1000
 ```
+
+## 2. Usage
+
+https://github.com/AppsDevTeam/background-queue#2-pou%C5%BEit%C3%AD
