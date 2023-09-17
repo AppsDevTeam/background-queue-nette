@@ -34,7 +34,8 @@ backgroundQueue:
 			callback: [@App\Model\Mailer, sendEmail]
 			queue: some_other_queue
 	notifyOnNumberOfAttempts: 5 # počet pokusů o zpracování záznamu před zalogováním
-	tempDir: %tempDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandu
+	tempDir: %tempDir% # cesta pro uložení informace, že byla provedena aktualizace databázové struktury
+	locksDir: %locksDir% # cesta pro uložení zámku proti vícenásobnému spuštění commandů
 	connection: %database% # parametry predavane do Doctrine\Dbal\Connection
 	queue: %backgroundQueue.queue% # název fronty, do které se ukládají a ze které se vybírají záznamy
 	tableName: background_job # nepovinné, název tabulky, do které se budou ukládat jednotlivé joby
