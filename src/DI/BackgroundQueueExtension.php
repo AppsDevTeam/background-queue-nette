@@ -12,7 +12,6 @@ use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Processor;
 use Nette\Schema\Schema;
-use Nette\DI\Definitions;
 use stdClass;
 
 /** @noinspection PhpUnused */
@@ -33,6 +32,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			)->required(),
 			'notifyOnNumberOfAttempts' => Expect::int()->min(1)->required(),
 			'tempDir' => Expect::string()->required(),
+			'locksDir' => Expect::string()->required(),
 			'queue' => Expect::string(),
 			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
@@ -41,8 +41,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			'logger'=> Expect::anyOf(Expect::type(\Nette\DI\Definitions\Statement::class),  Expect::type(\Nette\DI\Statement::class))->nullable(),
 			'onBeforeProcess' => Expect::type('callable')->nullable(),
 			'onError' => Expect::type('callable')->nullable(),
-			'onAfterProcess' => Expect::type('callable')->nullable(),
-			'debug' => Expect::bool(false)
+			'onAfterProcess' => Expect::type('callable')->nullable()
 		]);
 	}
 
@@ -106,7 +105,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			->setAutowired(false);
 
 		foreach ($defs as $_def) {
-			$_def->addSetup('setLocksDir', [$config['tempDir']]);
+			$_def->addSetup('setLocksDir', [$config['locksDir']]);
 		}
 	}
 
