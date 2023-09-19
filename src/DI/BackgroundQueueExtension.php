@@ -74,6 +74,10 @@ class BackgroundQueueExtension extends CompilerExtension
 			$config['callbacks'][$callbackName]['callback'] = new $statementClass($statementEntity, [$config['callbacks'][$callbackName]['callback']]);
 		}
 
+		foreach (['onBeforeProcess', 'onError', 'onAfterProcess'] as $key) {
+			$config[$key] = new $statementClass($statementEntity, [$config[$key]]);
+		}
+
 		// service registration
 
 		$builder->addDefinition($this->prefix('service'))
