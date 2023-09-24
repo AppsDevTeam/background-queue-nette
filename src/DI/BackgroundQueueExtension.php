@@ -24,8 +24,8 @@ class BackgroundQueueExtension extends CompilerExtension
 				Expect::anyOf(
 					Expect::type('callable'),  // callbackName => callback
 					Expect::structure([              // callbackName => callback + queue
-							'callback' => Expect::type('callable'),
-							'queue' => Expect::string(),
+						'callback' => Expect::type('callable'),
+						'queue' => Expect::string(),
 					])
 				),
 				'string'
@@ -51,14 +51,6 @@ class BackgroundQueueExtension extends CompilerExtension
 		$this->config = $config = $this->objectToArray((new Processor)->process($this->getConfigSchema(), $this->config));
 		$builder = $this->getContainerBuilder();
 
-		if (class_exists(\Nette\DI\Definitions\Statement::class, false)) {
-			$statementClass = \Nette\DI\Definitions\Statement::class;
-		} else {
-			// nette/di 2.4
-			$statementClass = \Nette\DI\Statement::class;
-		}
-		$statementEntity = 'function(...$parameters){ return call_user_func(?, ...$parameters); }';
-
 		foreach ($config['callbacks'] as $callbackName => $callbackData) {
 			if (!isset($callbackData['callback'])) {
 				// structure unification:
@@ -70,12 +62,6 @@ class BackgroundQueueExtension extends CompilerExtension
 					'queue' => null,
 				];
 			}
-
-			$config['callbacks'][$callbackName]['callback'] = new $statementClass($statementEntity, [$config['callbacks'][$callbackName]['callback']]);
-		}
-
-		foreach (['onBeforeProcess', 'onError', 'onAfterProcess'] as $key) {
-			$config[$key] = new $statementClass($statementEntity, [$config[$key]]);
 		}
 
 		// service registration
