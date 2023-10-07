@@ -15,8 +15,7 @@
 		"php": "^7.4|^8.0",
 		"adt/background-queue": "^4.16.10",
 		"nette/di": "^2.4|^3.0",
-		"nette/schema": "^1.2",
-		"adt/nette-proxy": "^1.0"
+		"nette/schema": "^1.2"
 	},
 	"autoload": {
 		"psr-4": {
