@@ -77,6 +77,16 @@ backgroundQueue:
 	waitingJobExpiration: 1000
 ```
 
+### 1.3.3 Proxy
+
+To avoid service circular references, it's recommended to use https://github.com/AppsDevTeam/nette-proxy and set BackgroundQueue as lazy:
+
+```
+services:
+	backgroundQueue.service:
+		tags: [lookyman.lazy]
+```
+
 ## 2. Usage
 
 https://github.com/AppsDevTeam/background-queue#2-pou%C5%BEit%C3%AD
