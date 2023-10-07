@@ -8,7 +8,6 @@ use ADT\BackgroundQueue\Console\ConsumeCommand;
 use ADT\BackgroundQueue\Console\ProcessCommand;
 use ADT\BackgroundQueue\Console\ReloadConsumersCommand;
 use ADT\BackgroundQueue\Console\UpdateSchemaCommand;
-use Lookyman\Nette\Proxy\DI\ProxyExtension;
 use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Processor;
@@ -69,8 +68,7 @@ class BackgroundQueueExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('service'))
 			->setFactory(BackgroundQueue::class)
-			->setArguments(['config' => $config])
-			->addTag(ProxyExtension::TAG_LAZY);
+			->setArguments(['config' => $config]);
 
 		// command registration
 
