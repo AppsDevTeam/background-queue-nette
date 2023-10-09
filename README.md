@@ -47,7 +47,7 @@ backgroundQueue:
 
 ### 1.3 Broker (optional)
 
-To get best possible performance, it's recommended to use AMQP broker (eg. RabbitMQ) https://github.com/AppsDevTeam/background-queue#131-php-amqplib-installation and configure it like this:
+To get the best possible performance and user convenience, it's recommended to use AMQP broker (eg. RabbitMQ) https://github.com/AppsDevTeam/background-queue#131-php-amqplib-installation and configure it like this:
 
 ```neon
 parameters:
