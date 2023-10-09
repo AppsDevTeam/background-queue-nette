@@ -45,13 +45,9 @@ backgroundQueue:
 	onAfterProcess: null # nepovinné
 ```
 
-## 1.3 Broker (optional)
+### 1.3 Broker (optional)
 
-### 1.3.1 Installation
-
-https://github.com/AppsDevTeam/background-queue#131-php-amqplib-installation
-
-### 1.3.2 Configuration
+To get best possible performance, it's recommended to use AMQP broker (eg. RabbitMQ) https://github.com/AppsDevTeam/background-queue#131-php-amqplib-installation and configure it like this:
 
 ```neon
 parameters:
@@ -77,7 +73,7 @@ backgroundQueue:
 	waitingJobExpiration: 1000
 ```
 
-### 1.3.3 Proxy
+### 1.4 Proxy (optional)
 
 To avoid service circular references, it's recommended to use https://github.com/AppsDevTeam/nette-proxy and set BackgroundQueue as lazy:
 
