@@ -33,7 +33,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			'notifyOnNumberOfAttempts' => Expect::int()->min(1)->required(),
 			'tempDir' => Expect::string()->required(),
 			'locksDir' => Expect::string()->required(),
-			'queue' => Expect::string(),
+			'queue' => Expect::string()->nullable(),
 			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
 			'producer' => Expect::string()->nullable(),
