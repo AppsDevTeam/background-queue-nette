@@ -13,7 +13,7 @@
 	"license": "MIT",
 	"require": {
 		"php": "^7.4|^8.0",
-		"adt/background-queue": "^4.16.10",
+		"adt/background-queue": "^4.20",
 		"nette/di": "^2.4|^3.0",
 		"nette/schema": "^1.2"
 	},

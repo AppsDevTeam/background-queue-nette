@@ -43,6 +43,7 @@ backgroundQueue:
 	onBeforeProcess: null # nepovinné
 	onError: [ADT\Utils\Guzzle, handleException]  # nepovinné
 	onAfterProcess: null # nepovinné
+	onProcessingGetMetadata: null # nepovinné
 ```
 
 ### 1.3 Broker (optional)
