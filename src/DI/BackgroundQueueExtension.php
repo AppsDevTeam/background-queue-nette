@@ -41,7 +41,8 @@ class BackgroundQueueExtension extends CompilerExtension
 			'logger'=> Expect::anyOf(Expect::type(\Nette\DI\Definitions\Statement::class),  Expect::type(\Nette\DI\Statement::class))->nullable(),
 			'onBeforeProcess' => Expect::type('callable')->nullable(),
 			'onError' => Expect::type('callable')->nullable(),
-			'onAfterProcess' => Expect::type('callable')->nullable()
+			'onAfterProcess' => Expect::type('callable')->nullable(),
+			'onProcessingGetMetadata' => Expect::type('callable')->nullable(),
 		]);
 	}
 
