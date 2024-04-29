@@ -24,8 +24,9 @@ class BackgroundQueueExtension extends CompilerExtension
 				Expect::anyOf(
 					Expect::type('callable'),  // callbackName => callback
 					Expect::structure([              // callbackName => callback + queue
-						'callback' => Expect::type('callable'),
-						'queue' => Expect::string(),
+						'callback' => Expect::type('callable')->required(),
+						'queue' => Expect::string()->nullable(),
+						'priority' => Expect::int()->min(1)->nullable(),
 					])
 				),
 				'string'
@@ -33,7 +34,8 @@ class BackgroundQueueExtension extends CompilerExtension
 			'notifyOnNumberOfAttempts' => Expect::int()->min(1)->required(),
 			'tempDir' => Expect::string()->required(),
 			'locksDir' => Expect::string()->required(),
-			'queue' => Expect::string()->nullable(),
+			'queue' => Expect::string()->required(),
+			'priorities' => Expect::arrayOf(Expect::int()->min(1))->default([1])->mergeDefaults(false),
 			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
 			'producer' => Expect::string()->nullable(),
@@ -61,6 +63,7 @@ class BackgroundQueueExtension extends CompilerExtension
 				$config['callbacks'][$callbackName] = [
 					'callback' => $callbackData,
 					'queue' => null,
+					'priority' => null,
 				];
 			}
 		}
