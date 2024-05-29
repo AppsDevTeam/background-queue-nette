@@ -35,6 +35,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			'tempDir' => Expect::string()->required(),
 			'locksDir' => Expect::string()->required(),
 			'queue' => Expect::string()->required(),
+			'bulkSize' => Expect::int(1)->min(1),
 			'priorities' => Expect::arrayOf(Expect::int()->min(1))->default([1])->mergeDefaults(false),
 			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
@@ -45,6 +46,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			'onError' => Expect::type('callable')->nullable(),
 			'onAfterProcess' => Expect::type('callable')->nullable(),
 			'onProcessingGetMetadata' => Expect::type('callable')->nullable(),
+			'parametersFormat' => Expect::string()->nullable(),
 		]);
 	}
 
