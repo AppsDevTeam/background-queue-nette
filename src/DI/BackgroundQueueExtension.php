@@ -36,7 +36,7 @@ class BackgroundQueueExtension extends CompilerExtension
 			'locksDir' => Expect::string()->required(),
 			'queue' => Expect::string()->required(),
 			'bulkSize' => Expect::int(1)->min(1),
-			'priorities' => Expect::arrayOf(Expect::int()->min(1))->default([1])->mergeDefaults(false),
+			'priorities' => Expect::arrayOf(Expect::int()->min(1)->max(999))->default([1])->mergeDefaults(false),
 			'connection' => Expect::anyOf('string', Expect::arrayOf('int|string|object', 'string')),
 			'tableName' => Expect::string('background_job'),
 			'producer' => Expect::string()->nullable(),
