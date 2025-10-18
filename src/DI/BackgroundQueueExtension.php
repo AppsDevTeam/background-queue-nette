@@ -47,7 +47,6 @@ class BackgroundQueueExtension extends CompilerExtension
 			'onAfterProcess' => Expect::type('callable')->nullable(),
 			'onProcessingGetMetadata' => Expect::type('callable')->nullable(),
 			'parametersFormat' => Expect::string()->nullable(),
-			'autoUpdateSchema' => Expect::bool(true)->required(),
 		]);
 	}
 
