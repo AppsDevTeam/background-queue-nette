@@ -41,6 +41,13 @@ class BackgroundQueueExtension extends CompilerExtension
 			'tableName' => Expect::string('background_job'),
 			'producer' => Expect::string()->nullable(),
 			'waitingJobExpiration' => Expect::int(1000),
+			// Jak dlouho (v sekundách) smí job zůstat ve stavu PROCESSING bez jediného zápisu, než ho
+			// reaper prohlásí za osiřelého po zabitém konzumerovi. 0 reaper vypne. Musí být s rezervou
+			// delší než nejdelší běh callbacku, který se nehlásí přes BackgroundQueue::heartbeat().
+			'stalledJobTimeout' => Expect::int(3600)->min(0),
+			// Minimální prodleva (v sekundách) mezi dvěma zápisy heartbeat(). Tep chodí z každého dotazu
+			// callbacku, takže throttling drží zátěž na jednom UPDATE za minutu na běžící job.
+			'heartbeatInterval' => Expect::int(60)->min(0),
 			'logger'=> Expect::anyOf(Expect::type(\Nette\DI\Definitions\Statement::class),  Expect::type(\Nette\DI\Statement::class))->nullable(),
 			'onBeforeProcess' => Expect::type('callable')->nullable(),
 			'onError' => Expect::type('callable')->nullable(),
