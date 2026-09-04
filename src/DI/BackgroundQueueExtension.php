@@ -5,6 +5,7 @@ namespace ADT\BackgroundQueueNette\DI;
 use ADT\BackgroundQueue\BackgroundQueue;
 use ADT\BackgroundQueue\Console\ClearFinishedCommand;
 use ADT\BackgroundQueue\Console\ConsumeCommand;
+use ADT\BackgroundQueue\Console\MonitorCommand;
 use ADT\BackgroundQueue\Console\ProcessCommand;
 use ADT\BackgroundQueue\Console\ReloadConsumersCommand;
 use ADT\BackgroundQueue\Console\UpdateSchemaCommand;
@@ -105,6 +106,10 @@ class BackgroundQueueExtension extends CompilerExtension
 
 		$defs[] = $builder->addDefinition($this->prefix('updateSchemaCommand'))
 			->setFactory(UpdateSchemaCommand::class)
+			->setAutowired(false);
+
+		$defs[] = $builder->addDefinition($this->prefix('monitorCommand'))
+			->setFactory(MonitorCommand::class)
 			->setAutowired(false);
 
 		foreach ($defs as $_def) {
