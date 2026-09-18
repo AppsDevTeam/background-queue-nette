@@ -8,6 +8,7 @@ use ADT\BackgroundQueue\Console\ConsumeCommand;
 use ADT\BackgroundQueue\Console\MonitorCommand;
 use ADT\BackgroundQueue\Console\ProcessCommand;
 use ADT\BackgroundQueue\Console\ReloadConsumersCommand;
+use ADT\BackgroundQueue\Console\ShutdownConsumersCommand;
 use ADT\BackgroundQueue\Console\UpdateSchemaCommand;
 use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
@@ -101,6 +102,10 @@ class BackgroundQueueExtension extends CompilerExtension
 
 			$defs[] = $builder->addDefinition($this->prefix('reloadConsumerCommand'))
 				->setFactory(ReloadConsumersCommand::class)
+				->setAutowired(false);
+
+			$defs[] = $builder->addDefinition($this->prefix('shutdownConsumerCommand'))
+				->setFactory(ShutdownConsumersCommand::class)
 				->setAutowired(false);
 		}
 
