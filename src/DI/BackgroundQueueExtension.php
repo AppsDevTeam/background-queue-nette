@@ -50,6 +50,13 @@ class BackgroundQueueExtension extends CompilerExtension
 			// Minimální prodleva (v sekundách) mezi dvěma zápisy heartbeat(). Tep chodí z každého dotazu
 			// callbacku, takže throttling drží zátěž na jednom UPDATE za minutu na běžící job.
 			'heartbeatInterval' => Expect::int(60)->min(0),
+			// Soubor, podle kterého konzumer pozná, zda je tento uzel leader clusteru (obsah `1`) a smí
+			// brát joby. Režim zapíná existence adresáře souboru (mountuje infrastruktura), null = vypnuto
+			// natvrdo. Viz README knihovny 6.3.
+			'leaderFile' => Expect::string('/run/cluster-leader/is-leader')->nullable(),
+			// Kolik sekund musí být uzel leaderem (mtime leaderFile), než na něm konzumeři začnou - rezerva
+			// na zastavení konzumerů předchozího leadera.
+			'leaderStartDelay' => Expect::int(30)->min(0),
 			'logger'=> Expect::anyOf(Expect::type(\Nette\DI\Definitions\Statement::class),  Expect::type(\Nette\DI\Statement::class))->nullable(),
 			'onBeforeProcess' => Expect::type('callable')->nullable(),
 			'onError' => Expect::type('callable')->nullable(),
